@@ -4,11 +4,16 @@ An interactive demo dashboard showcasing all 5 parts of the AgentShield platform
 Run with: streamlit run streamlit_app.py
 """
 
+import os
 import sys
 import json
 import time
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
+
+from dotenv import load_dotenv
+load_dotenv("../.env")
+load_dotenv(".env")
 
 import streamlit as st
 
@@ -168,7 +173,7 @@ def init_session_state():
     st.session_state.mcp_server = MCPSecurityServer(demo_mode=True)
     st.session_state.mcp_server.register_agent(AgentRegistryEntry(
         agent_id="demo_agent", agent_name="Demo Agent",
-        role=AgentRole.READER, allowed_repos=["api-backend"], allowed_branches=["main"],
+        role=AgentRole.READER, allowed_repos=["api-backend", "Jimil-Joshi/vulnerable-api-demo"], allowed_branches=["main"],
     ))
     st.session_state.integrity = IntegrityMonitor(context_graph=graph)
     st.session_state.triage = TriageAgent(context_graph=graph)
@@ -209,6 +214,25 @@ with st.sidebar:
     - **Signing**: HMAC-SHA256
     - **Models**: Pydantic v2
     """)
+    st.divider()
+    st.markdown("### 🔌 Data Mode")
+    _github_token = os.getenv("GITHUB_TOKEN", "")
+    _has_token = bool(_github_token)
+    use_real_github = st.toggle(
+        "Real GitHub Mode",
+        value=False,
+        disabled=not _has_token,
+        help="Toggle ON to read real files from Jimil-Joshi/vulnerable-api-demo on GitHub"
+    )
+    if use_real_github:
+        st.success("🟢 Connected to **Jimil-Joshi/vulnerable-api-demo**")
+        st.session_state.real_github = True
+        st.session_state.github_repo = "Jimil-Joshi/vulnerable-api-demo"
+    else:
+        if not _has_token:
+            st.info("Set `GITHUB_TOKEN` in .env to enable real mode")
+        st.session_state.real_github = False
+        st.session_state.github_repo = "api-backend"
     st.divider()
     if st.button("🔄 Reset Demo State", use_container_width=True):
         for key in list(st.session_state.keys()):
@@ -586,28 +610,49 @@ with tab_mcp:
     st.divider()
 
     # MCP Tool Calls
-    st.markdown("### 🔧 MCP Tool Calls (Demo Mode)")
+    _real = st.session_state.get("real_github", False)
+    _repo = st.session_state.get("github_repo", "api-backend")
+    _mode_label = f"Real GitHub: `{_repo}`" if _real else "Demo Mode"
+    st.markdown(f"### 🔧 MCP Tool Calls ({_mode_label})")
+
+    # Switch server to real mode if toggle is on
+    if _real and st.session_state.mcp_server.demo_mode:
+        st.session_state.mcp_server = MCPSecurityServer(demo_mode=False, max_rate_per_minute=20)
+        st.session_state.mcp_server.register_agent(AgentRegistryEntry(
+            agent_id="demo_agent", agent_name="Demo Agent",
+            role=AgentRole.READER, allowed_repos=[_repo], allowed_branches=["main"],
+        ))
+    elif not _real and not st.session_state.mcp_server.demo_mode:
+        st.session_state.mcp_server = MCPSecurityServer(demo_mode=True)
+        st.session_state.mcp_server.register_agent(AgentRegistryEntry(
+            agent_id="demo_agent", agent_name="Demo Agent",
+            role=AgentRole.READER, allowed_repos=["api-backend", "Jimil-Joshi/vulnerable-api-demo"], allowed_branches=["main"],
+        ))
+
     mcp_tool = st.selectbox("Tool", ["read_file", "list_commits", "get_pr_details"])
 
     if mcp_tool == "read_file":
         mcp_path = st.text_input("File Path", "src/auth/login.py", key="mcp_filepath")
         if st.button("Execute Tool", key="mcp_exec"):
-            result = st.session_state.mcp_server.read_file("demo_agent", "api-backend", mcp_path)
+            result = st.session_state.mcp_server.read_file("demo_agent", _repo, mcp_path)
             if "error" in result:
                 st.error(f"Error: {result}")
             else:
-                st.success("File read successfully!")
-                st.json(result)
+                st.success(f"File read successfully from {'GitHub' if _real else 'demo data'}!")
+                if _real and "content" in result:
+                    st.code(result["content"], language="python")
+                else:
+                    st.json(result)
 
     elif mcp_tool == "list_commits":
         if st.button("Execute Tool", key="mcp_exec_commits"):
-            result = st.session_state.mcp_server.list_commits("demo_agent", "api-backend", limit=5)
+            result = st.session_state.mcp_server.list_commits("demo_agent", _repo, limit=5)
             st.json(result)
 
     elif mcp_tool == "get_pr_details":
         pr_num = st.number_input("PR Number", min_value=1, value=1)
         if st.button("Execute Tool", key="mcp_exec_pr"):
-            result = st.session_state.mcp_server.get_pr_details("demo_agent", "api-backend", pr_num)
+            result = st.session_state.mcp_server.get_pr_details("demo_agent", _repo, pr_num)
             st.json(result)
 
     # Audit log
