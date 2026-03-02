@@ -1,5 +1,8 @@
 # 🛡️ AgentShield — AI Agent Security Platform
 
+> **Copyright © 2026 Jimil Joshi. All rights reserved.**
+> This code is provided for evaluation purposes only. No license is granted for production or commercial use unless an employment or consulting agreement is signed. Not for commercial use without written permission.
+
 > A comprehensive security platform for monitoring, verifying, and securing AI agent operations in software development environments.
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
