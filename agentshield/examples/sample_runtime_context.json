@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ctx_payment",
+    "environment": "production",
+    "service_name": "payment-service",
+    "is_deployed": true,
+    "has_auth": true,
+    "is_internet_facing": true,
+    "handles_pii": true,
+    "recently_modified_by_ai": false,
+    "file_paths": ["src/payment/process.py"],
+    "description": "Production payment processing service. Handles credit card transactions and PII."
+  },
+  {
+    "id": "ctx_auth",
+    "environment": "production",
+    "service_name": "auth-service",
+    "is_deployed": true,
+    "has_auth": false,
+    "is_internet_facing": true,
+    "handles_pii": true,
+    "recently_modified_by_ai": false,
+    "file_paths": ["src/auth/login.py"],
+    "description": "Production authentication service. Entry point — no auth required (it IS the auth)."
+  },
+  {
+    "id": "ctx_admin",
+    "environment": "production",
+    "service_name": "admin-dashboard",
+    "is_deployed": true,
+    "has_auth": true,
+    "is_internet_facing": true,
+    "handles_pii": true,
+    "recently_modified_by_ai": true,
+    "file_paths": ["src/admin/dashboard.py"],
+    "description": "Production admin dashboard. Recently modified by AI agent. Contains PII display."
+  },
+  {
+    "id": "ctx_dev_scripts",
+    "environment": "dev",
+    "service_name": "dev-tools",
+    "is_deployed": false,
+    "has_auth": false,
+    "is_internet_facing": false,
+    "handles_pii": false,
+    "recently_modified_by_ai": false,
+    "file_paths": ["scripts/dev_setup.py"],
+    "description": "Development-only setup scripts. Never deployed. Not internet-facing."
+  },
+  {
+    "id": "ctx_api",
+    "environment": "production",
+    "service_name": "api-service",
+    "is_deployed": true,
+    "has_auth": true,
+    "is_internet_facing": true,
+    "handles_pii": false,
+    "recently_modified_by_ai": false,
+    "file_paths": ["src/api/files.py"],
+    "description": "Production API service for file management."
+  }
+]

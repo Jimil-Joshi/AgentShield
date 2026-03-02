@@ -1,0 +1,62 @@
+[
+  {
+    "id": "sast_001",
+    "vuln_type": "sql_injection",
+    "severity": "HIGH",
+    "file_path": "src/payment/process.py",
+    "line_number": 42,
+    "description": "SQL injection vulnerability in payment processing query. User input is directly interpolated into SQL statement without parameterization.",
+    "cwe_id": "CWE-89",
+    "snippet": "cursor.execute(f\"SELECT * FROM transactions WHERE user_id = {user_id} AND amount > {amount}\")"
+  },
+  {
+    "id": "sast_002",
+    "vuln_type": "hardcoded_secret",
+    "severity": "CRITICAL",
+    "file_path": "scripts/dev_setup.py",
+    "line_number": 3,
+    "description": "Hardcoded database password and API key found in development setup script.",
+    "cwe_id": "CWE-798",
+    "snippet": "DB_PASSWORD = 'dev_password_123'\nAPI_KEY = 'sk-dev-test-key-not-real'"
+  },
+  {
+    "id": "sast_003",
+    "vuln_type": "xss",
+    "severity": "MEDIUM",
+    "file_path": "src/admin/dashboard.py",
+    "line_number": 15,
+    "description": "Cross-site scripting (XSS) vulnerability in admin dashboard. User name is rendered without HTML escaping in template string.",
+    "cwe_id": "CWE-79",
+    "snippet": "return render_template_string(f'<h1>Welcome {user.name}</h1><p>{user.email}</p>')"
+  },
+  {
+    "id": "sast_004",
+    "vuln_type": "sql_injection",
+    "severity": "HIGH",
+    "file_path": "src/auth/login.py",
+    "line_number": 8,
+    "description": "SQL injection in authentication query. Username is directly concatenated into SQL string.",
+    "cwe_id": "CWE-89",
+    "snippet": "user = db.query(f'SELECT * FROM users WHERE username=\"{username}\"')"
+  },
+  {
+    "id": "sast_005",
+    "vuln_type": "missing_auth",
+    "severity": "HIGH",
+    "file_path": "src/admin/dashboard.py",
+    "line_number": 5,
+    "description": "Admin dashboard endpoint lacks authentication decorator. Any user can access admin functionality.",
+    "cwe_id": "CWE-306",
+    "snippet": "def admin_dashboard(user):\n    # No @require_auth decorator"
+  },
+  {
+    "id": "sast_006",
+    "vuln_type": "path_traversal",
+    "severity": "MEDIUM",
+    "file_path": "src/api/files.py",
+    "line_number": 22,
+    "description": "Path traversal vulnerability in file download endpoint. User-supplied filename is not validated.",
+    "cwe_id": "CWE-22",
+    "snippet": "return send_file(os.path.join(UPLOAD_DIR, request.args.get('filename')))"
+  }
+]

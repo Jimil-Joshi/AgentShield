@@ -1,0 +1,22 @@
+# AgentShield
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.env
+.venv/
+venv/
+env/
+*.log
+.pytest_cache/
+.mypy_cache/
+*.db
+*.sqlite3
+.DS_Store
+Thumbs.db
+*.pem
+*.key
