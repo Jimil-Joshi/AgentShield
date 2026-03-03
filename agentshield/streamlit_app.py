@@ -2,6 +2,7 @@
 AgentShield Security Dashboard — Streamlit App
 An interactive demo dashboard showcasing all 5 parts of the AgentShield platform.
 Run with: streamlit run streamlit_app.py
+Only for Demo Purpose
 """
 
 import os
